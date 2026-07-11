@@ -1,0 +1,21 @@
+{
+	"required": true,
+	"package": "net.example.firstmod.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"StructureCheckMixin",
+		"LootTableMixin",
+		"EnchantmentsMixin",
+		"LocalMobCapCalculatorMixin",
+		"MobMixin",
+		"LivingEntityMixin",
+		"VillagerMixin",
+		"BlockExpMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
