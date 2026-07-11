@@ -6,7 +6,6 @@ import net.example.firstmod.client.render.RenderHelper;
 import net.example.firstmod.client.theme.Colors;
 import net.example.firstmod.client.widget.Button;
 import net.example.firstmod.client.widget.ColorPicker;
-import net.example.firstmod.client.widget.Panel;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -100,6 +99,7 @@ public class ThemeConfigScreen extends BaseScreen {
             case 4 -> ThemeConfig.setTextPrimary(color);
             case 5 -> ThemeConfig.setTextSecondary(color);
         }
+        Colors.refresh();
     }
 
     private void applyPreset(int index) {
@@ -130,6 +130,7 @@ public class ThemeConfigScreen extends BaseScreen {
             if (pickers[i] != null) pickers[i].setSelectedColor(currentColors[i]);
         }
         ThemeConfig.save();
+        Colors.refresh();
     }
 
     private void resetDefaults() {

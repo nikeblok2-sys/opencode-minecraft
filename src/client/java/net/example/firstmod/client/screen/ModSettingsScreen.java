@@ -33,7 +33,7 @@ public class ModSettingsScreen extends BaseScreen {
         addRenderableWidget(new SettingsCard(contentX, contentY, cardW, cardH,
             Component.translatable("firstmod.settings.theme").getString(),
             Component.translatable("firstmod.settings.theme.desc").getString(),
-            Colors.accentGreen(), () -> {
+            Colors.ACCENT_GREEN, () -> {
                 if (minecraft != null) minecraft.gui.setScreen(new ThemeConfigScreen(this));
             }));
 
