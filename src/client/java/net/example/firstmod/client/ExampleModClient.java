@@ -1,6 +1,7 @@
 package net.example.firstmod.client;
 
 import net.example.firstmod.client.config.HudConfig;
+import net.example.firstmod.client.config.ThemeConfig;
 import net.example.firstmod.client.hud.HudManager;
 import net.example.firstmod.client.state.ClientCache;
 import net.example.firstmod.network.ProgressionPayloads;
@@ -13,6 +14,7 @@ public class ExampleModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         HudConfig.load();
+        ThemeConfig.load();
         HudElementRegistry.addFirst(
             Identifier.fromNamespaceAndPath("firstmod", "hud"),
             new HudManager()

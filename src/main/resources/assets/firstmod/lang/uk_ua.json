@@ -64,5 +64,29 @@
     "firstmod.setting.bossDamageMultiplier.desc": "1.0 – 10.0",
     "firstmod.profile.active": "Активно: %s",
     "firstmod.profile.current": "Поточно: %s",
-    "firstmod.profile.apply": "Застосувати"
+    "firstmod.profile.apply": "Застосувати",
+
+    "firstmod.inventory.settings": "Налаштування",
+
+    "firstmod.settings.title": "Налаштування моду",
+    "firstmod.settings.subtitle": "Налаштуй свій мод",
+    "firstmod.settings.theme": "Тема",
+    "firstmod.settings.theme.desc": "Кольори та вигляд",
+    "firstmod.settings.hud": "HUD",
+    "firstmod.settings.hud.desc": "Видимість та позиція HUD",
+    "firstmod.settings.progression": "Прогресія",
+    "firstmod.settings.progression.desc": "Налаштування прогресу",
+
+    "firstmod.theme.title": "Налаштування теми",
+    "firstmod.theme.background": "Фон",
+    "firstmod.theme.card": "Картка",
+    "firstmod.theme.accent1": "Акцент 1",
+    "firstmod.theme.accent2": "Акцент 2",
+    "firstmod.theme.text1": "Текст основний",
+    "firstmod.theme.text2": "Текст допоміжний",
+    "firstmod.theme.reset": "Скинути",
+    "firstmod.theme.dark_green": "Ліс",
+    "firstmod.theme.blue_steel": "Сталь",
+    "firstmod.theme.red_dark": "Вогонь",
+    "firstmod.theme.neon_purple": "Неон"
 }

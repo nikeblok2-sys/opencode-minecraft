@@ -1,5 +1,6 @@
 package net.example.firstmod.client.mixin;
 
+import net.example.firstmod.client.screen.ModSettingsScreen;
 import net.example.firstmod.client.screen.ScreenHistory;
 import net.example.firstmod.client.screen.SellScreen;
 import net.example.firstmod.client.screen.StatsScreen;
@@ -43,6 +44,12 @@ public abstract class InventoryScreenMixin extends AbstractContainerScreen<Inven
             "\u26C1 " + Component.translatable("firstmod.inventory.sell").getString(),
             Colors.ACCENT_ORANGE, () -> {
                 ScreenHistory.push(new SellScreen());
+            }));
+
+        addRenderableWidget(new Button(l - 56, t + 58, 54,
+            "\u2699 " + Component.translatable("firstmod.inventory.settings").getString(),
+            Colors.ACCENT_GRAY, () -> {
+                ScreenHistory.push(new ModSettingsScreen());
             }));
     }
 }

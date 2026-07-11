@@ -7,6 +7,39 @@ import net.minecraft.network.chat.Component;
 
 public final class RenderHelper {
 
+    public static void roundedRect(GuiGraphicsExtractor g, int x, int y, int w, int h, int radius, int color) {
+        if (radius <= 0) {
+            g.fill(x, y, x + w, y + h, color);
+            return;
+        }
+        int innerR = Math.max(1, radius - 1);
+        g.fill(x + radius, y, x + w - radius, y + innerR, color);
+        g.fill(x + radius, y + h - innerR, x + w - radius, y + h, color);
+        g.fill(x, y + radius, x + radius, y + h - radius, color);
+        g.fill(x + w - radius, y + radius, x + w, y + h - radius, color);
+        g.fill(x + radius, y + innerR, x + w - radius, y + h - innerR, color);
+        g.fill(x + innerR, y + radius, x + w - innerR, y + h - radius, color);
+        g.fill(x + innerR, y + innerR, x + w - innerR, y + h - innerR, color);
+    }
+
+    public static void roundedPanel(GuiGraphicsExtractor g, int x, int y, int w, int h, int radius) {
+        int corner = radius;
+        g.fillGradient(x, y, x + w, y + h, Colors.PANEL_TOP, Colors.PANEL_BOT);
+        g.fill(x, y, x + w, y + corner, Colors.PANEL_HIGHLIGHT);
+        g.fill(x, y + h - corner, x + w, y + h, Colors.PANEL_SHADOW_LINE);
+        g.fill(x, y + corner, x + corner, y + h - corner, Colors.SHADOW);
+        g.fill(x + w - corner, y + corner, x + w, y + h - corner, Colors.SHADOW);
+        g.fill(x + corner, y + h - corner, x + w - corner, y + h, Colors.SHADOW);
+        g.fill(x + corner, y + corner, x + w - corner, y + h - corner, Colors.PANEL_TOP);
+    }
+
+    public static void roundedCard(GuiGraphicsExtractor g, int x, int y, int w, int h, int radius, int accent) {
+        roundedPanel(g, x, y, w, h, radius);
+        if (accent != 0) {
+            g.fill(x + 2, y + 2, x + 3, y + h - 2, accent & 0xAAFFFFFF);
+        }
+    }
+
     public static void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
         g.fill(x - 1, y - 1, x + w + 1, y + h + 1, Colors.SHADOW);
         g.fillGradient(x, y, x + w, y + h, Colors.PANEL_TOP, Colors.PANEL_BOT);

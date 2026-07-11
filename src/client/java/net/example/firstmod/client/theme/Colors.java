@@ -67,13 +67,25 @@ public final class Colors {
     public static final int SLOT_SIZE = 20;
     public static final int BTN_H = 20;
 
-    public static int accentGold() { return ThemeManager.color("ACCENT_GOLD", ACCENT_GOLD); }
-    public static int accentGreen() { return ThemeManager.color("ACCENT_GREEN", ACCENT_GREEN); }
-    public static int accentRed() { return ThemeManager.color("ACCENT_RED", ACCENT_RED); }
-    public static int accentBlue() { return ThemeManager.color("ACCENT_BLUE", ACCENT_BLUE); }
-    public static int accentGray() { return ThemeManager.color("ACCENT_GRAY", ACCENT_GRAY); }
-    public static int textPrimary() { return ThemeManager.color("TEXT_PRIMARY", TEXT_PRIMARY); }
-    public static int textSecondary() { return ThemeManager.color("TEXT_SECONDARY", TEXT_SECONDARY); }
+    private static final ThemeDelegate DELEGATE = new ThemeDelegate();
+
+    public static int accentGold() { return ThemeManager.color("ACCENT_GOLD", DELEGATE.accentGold()); }
+    public static int accentGreen() { return ThemeManager.color("ACCENT_GREEN", DELEGATE.accentGreen()); }
+    public static int accentRed() { return ThemeManager.color("ACCENT_RED", DELEGATE.accentRed()); }
+    public static int accentBlue() { return ThemeManager.color("ACCENT_BLUE", DELEGATE.accentBlue()); }
+    public static int accentGray() { return ThemeManager.color("ACCENT_GRAY", DELEGATE.accentGray()); }
+    public static int textPrimary() { return ThemeManager.color("TEXT_PRIMARY", DELEGATE.textPrimary()); }
+    public static int textSecondary() { return ThemeManager.color("TEXT_SECONDARY", DELEGATE.textSecondary()); }
+
+    private static class ThemeDelegate {
+        public int accentGold() { return ACCENT_GOLD; }
+        public int accentGreen() { return ACCENT_GREEN; }
+        public int accentRed() { return ACCENT_RED; }
+        public int accentBlue() { return ACCENT_BLUE; }
+        public int accentGray() { return ACCENT_GRAY; }
+        public int textPrimary() { return TEXT_PRIMARY; }
+        public int textSecondary() { return TEXT_SECONDARY; }
+    }
 
     public static int darken(int color, float factor) {
         int a = color & 0xFF000000;
