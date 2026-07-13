@@ -10,7 +10,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-import java.util.function.Consumer;
 
 public class ThemeConfigScreen extends BaseScreen {
 
@@ -21,6 +20,7 @@ public class ThemeConfigScreen extends BaseScreen {
     private ColorPicker[] pickers = new ColorPicker[COLOR_ROWS];
     private int[] currentColors = new int[COLOR_ROWS];
     private String[] labels = new String[COLOR_ROWS];
+    private boolean needsRefresh;
 
     public ThemeConfigScreen(Screen parent) {
         super(Component.translatable("firstmod.theme.title"));
@@ -29,9 +29,11 @@ public class ThemeConfigScreen extends BaseScreen {
 
     @Override
     protected void init() {
-        windowWidth = 280;
-        int rowH = 34;
-        windowHeight = LayoutHelper.TITLE_H + 16 + COLOR_ROWS * rowH + 64;
+        windowWidth = 440;
+        int pickerH = 54;
+        int rowH = pickerH + 4;
+        int rows = 3;
+        windowHeight = LayoutHelper.TITLE_H + 24 + rows * rowH + 64;
         windowX = (width - windowWidth) / 2;
         windowY = (height - windowHeight) / 2;
 
@@ -48,19 +50,22 @@ public class ThemeConfigScreen extends BaseScreen {
         labels[4] = Component.translatable("firstmod.theme.text1").getString();
         labels[5] = Component.translatable("firstmod.theme.text2").getString();
 
-        int contentX = windowX + 10;
-        int pickerX = windowX + windowWidth - 10 - PICKER_W;
-        int startY = windowY + LayoutHelper.TITLE_H + 8;
+        int colW = (windowWidth - 40) / 2;
+        int startY = windowY + LayoutHelper.TITLE_H + 16;
+        int leftX = windowX + 12;
+        int rightX = leftX + colW + 12;
 
         for (int i = 0; i < COLOR_ROWS; i++) {
             final int idx = i;
-            ColorPicker picker = new ColorPicker(pickerX, startY + i * rowH, PICKER_W,
+            int px = (i < 3) ? leftX : rightX;
+            int py = startY + (i % 3) * rowH;
+            ColorPicker picker = new ColorPicker(px, py, colW,
                 currentColors[i], c -> applyColor(idx, c));
             pickers[i] = picker;
             addRenderableWidget(picker);
         }
 
-        int btnY = startY + COLOR_ROWS * rowH + 4;
+        int btnY = startY + rows * rowH + 4;
         addPresetButtons(btnY);
     }
 
@@ -81,11 +86,13 @@ public class ThemeConfigScreen extends BaseScreen {
 
         int doneY = y + 24;
         addRenderableWidget(new Button(contentCenterX() - 60, doneY, 55,
-            "firstmod.theme.reset", Colors.ACCENT_RED, this::resetDefaults));
+            Component.translatable("firstmod.theme.reset").getString(),
+            Colors.ACCENT_RED, this::resetDefaults));
         addRenderableWidget(new Button(contentCenterX() + 5, doneY, 55,
-            "gui.done", Colors.ACCENT_GREEN, () -> {
+            Component.translatable("gui.done").getString(),
+            Colors.ACCENT_GREEN, () -> {
                 ThemeConfig.save();
-                if (minecraft != null) minecraft.gui.setScreen(parent);
+                ScreenHistory.pop();
             }));
     }
 
@@ -99,7 +106,7 @@ public class ThemeConfigScreen extends BaseScreen {
             case 4 -> ThemeConfig.setTextPrimary(color);
             case 5 -> ThemeConfig.setTextSecondary(color);
         }
-        Colors.refresh();
+        needsRefresh = true;
     }
 
     private void applyPreset(int index) {
@@ -126,11 +133,18 @@ public class ThemeConfigScreen extends BaseScreen {
             }
         }
         for (int i = 0; i < COLOR_ROWS; i++) {
-            applyColor(i, currentColors[i]);
+            switch (i) {
+                case 0 -> ThemeConfig.setBackground(currentColors[i]);
+                case 1 -> ThemeConfig.setCard(currentColors[i]);
+                case 2 -> ThemeConfig.setAccentPrimary(currentColors[i]);
+                case 3 -> ThemeConfig.setAccentSecondary(currentColors[i]);
+                case 4 -> ThemeConfig.setTextPrimary(currentColors[i]);
+                case 5 -> ThemeConfig.setTextSecondary(currentColors[i]);
+            }
             if (pickers[i] != null) pickers[i].setSelectedColor(currentColors[i]);
         }
-        ThemeConfig.save();
         Colors.refresh();
+        ThemeConfig.save();
     }
 
     private void resetDefaults() {
@@ -139,17 +153,26 @@ public class ThemeConfigScreen extends BaseScreen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float delta) {
+        if (needsRefresh) {
+            Colors.refresh();
+            needsRefresh = false;
+        }
         super.extractRenderState(g, mx, my, delta);
         if (!useWindow) return;
 
-        int startY = windowY + LayoutHelper.TITLE_H + 8;
-        int rowH = 34;
+        int startY = windowY + LayoutHelper.TITLE_H + 16;
+        int rowH = 58;
+        int colW = (windowWidth - 40) / 2;
+        int leftX = windowX + 12;
+        int rightX = leftX + colW + 12;
 
         for (int i = 0; i < COLOR_ROWS; i++) {
-            g.text(font, labels[i], windowX + 12, startY + i * rowH + 8, Colors.TEXT_SECONDARY);
+            int lx = (i < 3) ? leftX : rightX;
+            int ly = startY + (i % 3) * rowH;
+            g.text(font, labels[i], lx + 2, ly - 11, Colors.TEXT_SECONDARY);
         }
 
         RenderHelper.divider(g, contentCenterX(), windowY + LayoutHelper.TITLE_H, windowWidth / 2 - 16);
-        RenderHelper.divider(g, contentCenterX(), startY + COLOR_ROWS * rowH, windowWidth / 2 - 16);
+        RenderHelper.divider(g, contentCenterX(), startY + 3 * rowH, windowWidth / 2 - 16);
     }
 }

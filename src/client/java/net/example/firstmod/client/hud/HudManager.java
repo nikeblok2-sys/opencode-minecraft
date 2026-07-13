@@ -31,12 +31,14 @@ public class HudManager implements HudElement {
         Minecraft mc = Minecraft.getInstance();
         float dt = delta.getGameTimeDeltaTicks();
 
+        float scale = HudConfig.scale();
+
         for (HudComponent c : components) {
             c.tick(dt);
         }
 
-        int pad = LayoutHelper.PAD;
-        int gap = 3;
+        int pad = (int)(LayoutHelper.PAD * scale);
+        int gap = (int)(3 * scale);
 
         int bw = 0;
         int bh = 0;

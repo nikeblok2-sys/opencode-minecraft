@@ -35,6 +35,8 @@ public class ProgressionConfigScreen extends BaseScreen {
     private MultiplierSlider mobGearSlider;
     private MultiplierSlider bossHpSlider;
     private MultiplierSlider bossDmgSlider;
+    private MultiplierSlider compoundBaseSlider;
+    private MultiplierSlider compoundRateSlider;
 
     public ProgressionConfigScreen(Screen parent) {
         super(Component.translatable("firstmod.config.title"));
@@ -59,7 +61,7 @@ public class ProgressionConfigScreen extends BaseScreen {
 
         layout.addChild(new Button(0, 0, w, Component.translatable("firstmod.config.selectProfile").getString(),
             Colors.ACCENT_BLUE, () -> {
-                this.minecraft.gui.setScreen(new ProfileScreen(() -> this.minecraft.gui.setScreen(this)));
+                ScreenHistory.push(new ProfileScreen());
             }));
         layout.addChild(spacer(w, 2));
 
@@ -87,6 +89,12 @@ public class ProgressionConfigScreen extends BaseScreen {
             ProgressionSettings.difficultyBonus, v -> ProgressionSettings.difficultyBonus = v);
         this.mobGearSlider = addSlider(layout, w, "firstmod.config.mobGear", 0.0f, 1.0f,
             ProgressionSettings.mobGearChance, v -> ProgressionSettings.mobGearChance = v);
+
+        layout.addChild(header(w, "firstmod.config.header.costs"));
+        this.compoundBaseSlider = addSlider(layout, w, "firstmod.config.compoundBase", 1.0f, 20.0f,
+            (float)ProgressionSettings.compoundBase, v -> ProgressionSettings.compoundBase = v);
+        this.compoundRateSlider = addSlider(layout, w, "firstmod.config.compoundRate", 0.01f, 0.5f,
+            (float)ProgressionSettings.compoundRate, v -> ProgressionSettings.compoundRate = v);
 
         layout.addChild(header(w, "firstmod.config.header.bosses"));
         this.bossHpSlider = addSlider(layout, w, "firstmod.config.bossHp", 1.0f, 10.0f,
@@ -148,6 +156,8 @@ public class ProgressionConfigScreen extends BaseScreen {
         this.bossDmgSlider.setValueFromField(ProgressionSettings.bossDamageMultiplier);
         this.lootMultSlider.setValueFromField(ProgressionSettings.lootMultiplier);
         this.enchantBonusSlider.setValueFromField(ProgressionSettings.enchantBonusLevels);
+        this.compoundBaseSlider.setValueFromField((float)ProgressionSettings.compoundBase);
+        this.compoundRateSlider.setValueFromField((float)ProgressionSettings.compoundRate);
         if (this.extraLootButton != null) this.extraLootButton.setValue(ProgressionSettings.extraLoot);
         if (this.overlimitButton != null) this.overlimitButton.setValue(ProgressionSettings.overlimitEnchants);
     }

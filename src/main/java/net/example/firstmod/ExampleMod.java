@@ -6,7 +6,7 @@ import net.example.firstmod.component.MilestoneManager;
 import net.example.firstmod.component.ProgressionData;
 import net.example.firstmod.component.ProgressionStore;
 import net.example.firstmod.component.StatEffectHelper;
-import net.example.firstmod.component.StatFormulas;
+import net.example.firstmod.component.StatRegistry;
 import net.example.firstmod.config.ModConfigManager;
 import net.example.firstmod.config.ProgressionConfig;
 import net.example.firstmod.data.PlayerDataManager;
@@ -106,7 +106,7 @@ public class ExampleMod implements ModInitializer {
 		ProgressionStore store = ProgressionStore.getOrCreate(player.level().getServer());
 		ProgressionData data = store.get(player.getUUID());
 		ProgressionPayloads.SyncPayload sync = new ProgressionPayloads.SyncPayload(
-			data.statLevels, data.availableSp(), data.totalEarnedSp, data.spentSp);
+			data.statLevels, data.availablePp(), data.totalEarnedPp, data.spentPp);
 		ServerPlayNetworking.send(player, sync);
 	}
 
@@ -122,11 +122,12 @@ public class ExampleMod implements ModInitializer {
 			store.save();
 			syncPlayerData(player);
 			StatEffectHelper.applyAttributes(player);
+			String key = StatRegistry.get(statIndex).key();
 			player.sendSystemMessage(net.minecraft.network.chat.Component.translatable(
-				"firstmod.stat.upgraded", StatFormulas.STAT_NAMES[statIndex], data.statLevels[statIndex]));
+				"firstmod.stat.upgraded", key, data.statLevels[statIndex]));
 			if (upgraded > 1) {
-				player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-					"(+ " + upgraded + " рівнів)"));
+				player.sendSystemMessage(net.minecraft.network.chat.Component.translatable(
+					"firstmod.stat.upgraded_extra", upgraded));
 			}
 		} else {
 			player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("firstmod.stat.cant_afford"));
@@ -146,13 +147,13 @@ public class ExampleMod implements ModInitializer {
 			total += ItemValuation.getValue(toSell);
 		}
 		if (total <= 0) return;
-        int spAmount = Math.max(1, (int) Math.round(total));
+        int ppAmount = Math.max(1, (int) Math.round(total));
 		ProgressionStore store = ProgressionStore.getOrCreate(player.level().getServer());
 		ProgressionData data = store.get(player.getUUID());
-		data.addSp(spAmount);
+		data.addPp(ppAmount);
 		store.save();
 		syncPlayerData(player);
-		player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("firstmod.shop.sold", spAmount));
+		player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("firstmod.shop.sold", ppAmount));
 	}
 
 	public static Identifier id(String path) {

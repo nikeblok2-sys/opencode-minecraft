@@ -1,6 +1,6 @@
 package net.example.firstmod.client.mixin;
 
-import net.example.firstmod.client.screen.ModSettingsScreen;
+import net.example.firstmod.client.screen.ProfileScreen;
 import net.example.firstmod.client.screen.ScreenHistory;
 import net.example.firstmod.client.screen.SellScreen;
 import net.example.firstmod.client.screen.StatsScreen;
@@ -27,29 +27,30 @@ public abstract class InventoryScreenMixin extends AbstractContainerScreen<Inven
 
     @Inject(method = "init", at = @At("TAIL"))
     private void firstmod$addButtons(CallbackInfo ci) {
+        if (minecraft.player != null && minecraft.player.isCreative()) return;
         int l = leftPos;
         int t = topPos;
 
-        addRenderableWidget(new Button(l - 56, t + 10, 54,
+        addRenderableWidget(new Button(l - 60, t + 10, 54,
             "\u269C " + Component.translatable("firstmod.inventory.stats").getString(),
             Colors.ACCENT_BLUE, () -> {
                 ClientPlayNetworking.send(new ProgressionPayloads.RequestStatsPayload());
                 ScreenHistory.push(new StatsScreen(
                     ClientCache.getStatLevels(),
-                    ClientCache.getAvailableSp()
+                    ClientCache.getAvailablePp()
                 ));
             }));
 
-        addRenderableWidget(new Button(l - 56, t + 34, 54,
+        addRenderableWidget(new Button(l - 60, t + 34, 54,
             "\u26C1 " + Component.translatable("firstmod.inventory.sell").getString(),
             Colors.ACCENT_ORANGE, () -> {
                 ScreenHistory.push(new SellScreen());
             }));
 
-        addRenderableWidget(new Button(l - 56, t + 58, 54,
-            "\u2699 " + Component.translatable("firstmod.inventory.settings").getString(),
-            Colors.ACCENT_GRAY, () -> {
-                ScreenHistory.push(new ModSettingsScreen());
+        addRenderableWidget(new Button(l - 60, t + 58, 54,
+            "\u2728 " + Component.translatable("firstmod.inventory.profile").getString(),
+            Colors.ACCENT_GREEN, () -> {
+                ScreenHistory.push(new ProfileScreen());
             }));
     }
 }

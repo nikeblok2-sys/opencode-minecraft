@@ -58,11 +58,16 @@ public class SellScreen extends BaseScreen {
 
         int sellY = windowY + windowHeight - 28;
         int bw = 110;
-        addRenderableWidget(new Button(contentCenterX() - bw - 5, sellY, bw, "firstmod.shop.sell_all",
+        int btnGroupW = bw + 10 + 60;
+        int btnX = contentCenterX() - btnGroupW / 2;
+        addRenderableWidget(new Button(btnX, sellY, bw,
+            Component.translatable("firstmod.shop.sell_all").getString(),
             Colors.ACCENT_ORANGE, this::sell));
-        addRenderableWidget(new Button(contentCenterX() + 5, sellY, 60, "gui.back",
+        addRenderableWidget(new Button(btnX + bw + 10, sellY, 60,
+            Component.translatable("gui.back").getString(),
             Colors.ACCENT_RED, ScreenHistory::pop));
 
+        valueAnim.set(0);
         recalcTotal();
         valueAnim.set((float) totalValue);
     }
@@ -135,7 +140,7 @@ public class SellScreen extends BaseScreen {
 
         valueAnim.tick(delta);
 
-        String valueStr = "\u26A1 " + String.format("%.0f", valueAnim.get()) + " SP";
+        String valueStr = "\u26A1 " + String.format("%.0f", valueAnim.get()) + " PP";
         if (selectedCount > 0) {
             valueStr += "   (" + selectedCount + " " + Component.translatable("firstmod.shop.items").getString() + ")";
         }
@@ -158,10 +163,6 @@ public class SellScreen extends BaseScreen {
             } else {
                 double value = ItemValuation.getValue(stack);
                 grid.renderItem(g, font, r, selected, slotHovered, stack, value);
-                if (selected && selectedCounts[i] < stack.getCount()) {
-                    String cnt = "x" + selectedCounts[i];
-                    g.text(font, cnt, r.x() + r.w() - font.width(cnt) - 2, r.y() + 2, Colors.ACCENT_GOLD);
-                }
             }
         });
 

@@ -23,7 +23,7 @@ public class ModSettingsScreen extends BaseScreen {
         int totalH = 3 * cardH + 2 * gap;
 
         windowWidth = totalW + 40;
-        windowHeight = totalH + LayoutHelper.TITLE_H + 40;
+        windowHeight = totalH + LayoutHelper.TITLE_H + 56;
         windowX = (width - windowWidth) / 2;
         windowY = (height - windowHeight) / 2;
 
@@ -34,23 +34,26 @@ public class ModSettingsScreen extends BaseScreen {
             Component.translatable("firstmod.settings.theme").getString(),
             Component.translatable("firstmod.settings.theme.desc").getString(),
             Colors.ACCENT_GREEN, () -> {
-                if (minecraft != null) minecraft.gui.setScreen(new ThemeConfigScreen(this));
+                if (minecraft != null) ScreenHistory.push(new ThemeConfigScreen(this));
             }));
 
         addRenderableWidget(new SettingsCard(contentX, contentY + (cardH + gap), cardW, cardH,
             Component.translatable("firstmod.settings.hud").getString(),
             Component.translatable("firstmod.settings.hud.desc").getString(),
-            Colors.ACCENT_BLUE, ScreenHistory::pop));
+            Colors.ACCENT_BLUE, () -> {
+                if (minecraft != null) ScreenHistory.push(new HudConfigScreen());
+            }));
 
         addRenderableWidget(new SettingsCard(contentX, contentY + 2 * (cardH + gap), cardW, cardH,
             Component.translatable("firstmod.settings.progression").getString(),
             Component.translatable("firstmod.settings.progression.desc").getString(),
             Colors.ACCENT_GOLD, () -> {
-                if (minecraft != null) minecraft.gui.setScreen(new ProgressionConfigScreen(this));
+                if (minecraft != null) ScreenHistory.push(new ProgressionConfigScreen(this));
             }));
 
         addRenderableWidget(new Button(
-            contentCenterX() - 30, windowY + windowHeight - 28, 60, "gui.back",
+            contentCenterX() - 30, windowY + windowHeight - 28, 60,
+            Component.translatable("gui.back").getString(),
             Colors.ACCENT_RED, ScreenHistory::pop));
     }
 

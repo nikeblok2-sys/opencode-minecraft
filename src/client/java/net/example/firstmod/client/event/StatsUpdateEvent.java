@@ -6,11 +6,11 @@ import net.fabricmc.fabric.api.event.EventFactory;
 @FunctionalInterface
 public interface StatsUpdateEvent {
     Event<StatsUpdateEvent> EVENT = EventFactory.createArrayBacked(StatsUpdateEvent.class,
-        listeners -> (levels, sp) -> {
+        listeners -> (levels, pp) -> {
             for (StatsUpdateEvent listener : listeners) {
-                listener.onUpdate(levels, sp);
+                listener.onUpdate(levels, pp);
             }
         });
 
-    void onUpdate(int[] statLevels, int availableSp);
+    void onUpdate(int[] statLevels, int availablePp);
 }

@@ -13,23 +13,23 @@ public class ProgressionPayloads {
     public static final Identifier REQUEST_STATS_ID = Identifier.fromNamespaceAndPath("firstmod", "request_stats");
     public static final Identifier REQUEST_SELL_ID = Identifier.fromNamespaceAndPath("firstmod", "request_sell");
 
-    public record SyncPayload(int[] statLevels, int availableSp, int totalEarned, int spent)
+    public record SyncPayload(int[] statLevels, int availablePp, int totalEarned, int spent)
             implements CustomPacketPayload {
 
         public static final StreamCodec<FriendlyByteBuf, SyncPayload> CODEC = new StreamCodec<>() {
             @Override
             public SyncPayload decode(FriendlyByteBuf buf) {
                 int[] levels = buf.readVarIntArray();
-                int sp = buf.readVarInt();
+                int pp = buf.readVarInt();
                 int earned = buf.readVarInt();
                 int spent = buf.readVarInt();
-                return new SyncPayload(levels, sp, earned, spent);
+                return new SyncPayload(levels, pp, earned, spent);
             }
 
             @Override
             public void encode(FriendlyByteBuf buf, SyncPayload p) {
                 buf.writeVarIntArray(p.statLevels);
-                buf.writeVarInt(p.availableSp);
+                buf.writeVarInt(p.availablePp);
                 buf.writeVarInt(p.totalEarned);
                 buf.writeVarInt(p.spent);
             }

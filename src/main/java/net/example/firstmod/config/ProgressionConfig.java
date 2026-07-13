@@ -29,7 +29,9 @@ public class ProgressionConfig {
         float difficultyBonus,
         float mobGearChance,
         float bossHpMultiplier,
-        float bossDamageMultiplier
+        float bossDamageMultiplier,
+        double compoundBase,
+        double compoundRate
     ) {
         static SettingsData fromCurrent() {
             return new SettingsData(
@@ -47,7 +49,9 @@ public class ProgressionConfig {
                 ProgressionSettings.difficultyBonus,
                 ProgressionSettings.mobGearChance,
                 ProgressionSettings.bossHpMultiplier,
-                ProgressionSettings.bossDamageMultiplier
+                ProgressionSettings.bossDamageMultiplier,
+                ProgressionSettings.compoundBase,
+                ProgressionSettings.compoundRate
             );
         }
 
@@ -67,6 +71,8 @@ public class ProgressionConfig {
             ProgressionSettings.mobGearChance = mobGearChance;
             ProgressionSettings.bossHpMultiplier = bossHpMultiplier;
             ProgressionSettings.bossDamageMultiplier = bossDamageMultiplier;
+            ProgressionSettings.compoundBase = compoundBase;
+            ProgressionSettings.compoundRate = compoundRate;
         }
     }
 

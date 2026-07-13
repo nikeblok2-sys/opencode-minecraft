@@ -8,34 +8,34 @@ import java.util.Set;
 
 public class ProgressionData {
 
-    public int[] statLevels = new int[StatFormulas.STAT_COUNT];
-    public int totalEarnedSp;
-    public int spentSp;
+    public int[] statLevels = new int[StatRegistry.count()];
+    public int totalEarnedPp;
+    public int spentPp;
     public final Set<String> killedBosses = new HashSet<>();
     public final Set<Integer> distanceMilestones = new HashSet<>();
 
-    public int availableSp() {
-        return totalEarnedSp - spentSp;
+    public int availablePp() {
+        return totalEarnedPp - spentPp;
     }
 
     public boolean tryUpgrade(int statIndex) {
-        if (statIndex < 0 || statIndex >= StatFormulas.STAT_COUNT) return false;
+        if (statIndex < 0 || statIndex >= StatRegistry.count()) return false;
         int cost = StatFormulas.cost(statLevels[statIndex]);
-        if (availableSp() < cost) return false;
-        spentSp += cost;
+        if (availablePp() < cost) return false;
+        spentPp += cost;
         statLevels[statIndex]++;
         return true;
     }
 
-    public void addSp(int amount) {
-        totalEarnedSp += amount;
+    public void addPp(int amount) {
+        totalEarnedPp += amount;
     }
 
     public CompoundTag toNbt() {
         CompoundTag tag = new CompoundTag();
         tag.putIntArray("StatLevels", statLevels);
-        tag.putInt("TotalEarned", totalEarnedSp);
-        tag.putInt("Spent", spentSp);
+        tag.putInt("TotalEarned", totalEarnedPp);
+        tag.putInt("Spent", spentPp);
         ListTag bosses = new ListTag();
         for (String b : killedBosses) bosses.add(StringTag.valueOf(b));
         tag.put("Bosses", bosses);
@@ -45,12 +45,12 @@ public class ProgressionData {
 
     public static ProgressionData fromNbt(CompoundTag tag) {
         ProgressionData data = new ProgressionData();
-        int[] levels = tag.getIntArray("StatLevels").orElse(new int[StatFormulas.STAT_COUNT]);
-        if (levels.length == StatFormulas.STAT_COUNT) {
-            System.arraycopy(levels, 0, data.statLevels, 0, StatFormulas.STAT_COUNT);
+        int[] levels = tag.getIntArray("StatLevels").orElse(new int[StatRegistry.count()]);
+        if (levels.length == StatRegistry.count()) {
+            System.arraycopy(levels, 0, data.statLevels, 0, StatRegistry.count());
         }
-        data.totalEarnedSp = tag.getIntOr("TotalEarned", 0);
-        data.spentSp = tag.getIntOr("Spent", 0);
+        data.totalEarnedPp = tag.getIntOr("TotalEarned", 0);
+        data.spentPp = tag.getIntOr("Spent", 0);
         ListTag bosses = tag.getListOrEmpty("Bosses");
         for (int i = 0; i < bosses.size(); i++) data.killedBosses.add(bosses.getStringOr(i, ""));
         int[] miles = tag.getIntArray("Miles").orElse(new int[0]);

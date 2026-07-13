@@ -17,14 +17,12 @@ public class ColorPicker extends AbstractWidget {
     private static final int SWATCH_GAP = 2;
     private static final int COLS = 8;
 
+    static final int PRESETS_SIZE = 16;
     private static final int[] PRESETS = {
         0xFF88CCAA, 0xFF44AA66, 0xFF2D4A3E, 0xFF3A5A4E,
         0xFFFFD700, 0xFFFFAA00, 0xFFFF5555, 0xFFFF4444,
         0xFF4488FF, 0xFF44AAFF, 0xFFCC44FF, 0xFFFF44FF,
-        0xFFFFFFFF, 0xFFCCCCCC, 0xFF888888, 0xFF444444,
-        0xFF88FF88, 0xFF44FF44, 0xFF00AA00, 0xFF006600,
-        0xFFFF8844, 0xFFFF6600, 0xFFCC2200, 0xFFAA0000,
-        0xFFAABBCC, 0xFF6688AA, 0xFF445566, 0xFF223344
+        0xFFFFFFFF, 0xFFCCCCCC, 0xFF888888, 0xFF444444
     };
 
     private int selectedColor;

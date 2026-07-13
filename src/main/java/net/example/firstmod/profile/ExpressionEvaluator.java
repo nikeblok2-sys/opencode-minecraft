@@ -72,18 +72,22 @@ public class ExpressionEvaluator {
                     String name = t.text;
                     expect(TokenType.LPAREN, "Expected '(' after function '" + name + "'");
                     double arg1 = parseAddSub();
-                    if (name.equals("min") || name.equals("max")) {
+                    if (name.equals("min") || name.equals("max") || name.equals("pow")) {
                         expect(TokenType.COMMA, "Expected ',' in function '" + name + "'");
                         double arg2 = parseAddSub();
                         expect(TokenType.RPAREN, "Missing ')' in function '" + name + "'");
-                        yield name.equals("min") ? Math.min(arg1, arg2) : Math.max(arg1, arg2);
+                        yield switch (name) {
+                            case "min" -> Math.min(arg1, arg2);
+                            case "max" -> Math.max(arg1, arg2);
+                            case "pow" -> Math.pow(arg1, arg2);
+                            default -> 0;
+                        };
                     } else {
                         expect(TokenType.RPAREN, "Missing ')' in function '" + name + "'");
                         yield switch (name) {
                             case "sqrt" -> Math.sqrt(Math.max(0, arg1));
                             case "abs" -> Math.abs(arg1);
                             case "exp" -> Math.exp(arg1);
-                            case "pow" -> Math.pow(arg1, 2);
                             default -> throw new IllegalArgumentException("Unknown function: " + name);
                         };
                     }

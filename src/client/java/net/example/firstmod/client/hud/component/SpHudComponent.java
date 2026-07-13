@@ -12,11 +12,11 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class SpHudComponent implements HudComponent {
 
-    private final Transition displayedSp = new Transition(0);
-    private int prevRealSp;
+    private final Transition displayedPp = new Transition(0);
+    private int prevRealPp;
     private float pulsePhase;
     private Font font;
-    private int renderX;
+    private int renderX = Integer.MIN_VALUE;
     private int renderY;
 
     public SpHudComponent() {
@@ -26,8 +26,8 @@ public class SpHudComponent implements HudComponent {
     @Override
     public int getWidth() {
         if (!HudConfig.showSp()) return 0;
-        int sp = Math.round(displayedSp.get());
-        String text = "\u26A1 " + sp + " SP";
+        int pp = Math.round(displayedPp.get());
+        String text = "\u26A1 " + pp + " PP";
         return font.width(text);
     }
 
@@ -41,11 +41,11 @@ public class SpHudComponent implements HudComponent {
         this.renderX = x;
         this.renderY = y;
         if (!HudConfig.showSp()) return;
-        int realSp = ClientCache.getAvailableSp();
-        if (realSp <= 0 && displayedSp.isComplete() && displayedSp.get() < 0.5f) return;
+        int realPp = ClientCache.getAvailablePp();
+        if (realPp <= 0 && displayedPp.isComplete() && displayedPp.get() < 0.5f) return;
 
-        int sp = Math.round(displayedSp.get());
-        String text = "\u26A1 " + sp + " SP";
+        int pp = Math.round(displayedPp.get());
+        String text = "\u26A1 " + pp + " PP";
 
         float pulse = pulsePhase > 0 ? 0.7f + 0.3f * (float) Math.sin(pulsePhase * Math.PI * 2) : 1f;
         int alpha = Math.min(255, Math.max(60, (int)(0xBB * pulse)));
@@ -57,20 +57,20 @@ public class SpHudComponent implements HudComponent {
     @Override
     public void tick(float dt) {
         if (font == null) font = Minecraft.getInstance().font;
-        int realSp = ClientCache.getAvailableSp();
+        int realPp = ClientCache.getAvailablePp();
 
-        if (realSp != prevRealSp) {
-            if (realSp > prevRealSp) {
-                int gained = realSp - prevRealSp;
-                FloatingTextRenderer.add("+" + gained + " SP", renderX, renderY - 4, Colors.ACCENT_GOLD);
+        if (realPp != prevRealPp) {
+            if (realPp > prevRealPp && renderX != Integer.MIN_VALUE) {
+                int gained = realPp - prevRealPp;
+                FloatingTextRenderer.add("+" + gained + " PP", renderX, renderY - 4, Colors.ACCENT_GOLD);
             }
-            prevRealSp = realSp;
+            prevRealPp = realPp;
         }
 
-        displayedSp.target(realSp, 0.25f);
-        displayedSp.tick(dt);
+        displayedPp.target(realPp, 0.25f);
+        displayedPp.tick(dt);
 
-        if (realSp > 0) {
+        if (realPp > 0) {
             pulsePhase = (pulsePhase + dt * 0.05f) % 1;
         } else {
             pulsePhase = 0;

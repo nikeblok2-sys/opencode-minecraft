@@ -1,6 +1,5 @@
 package net.example.firstmod.component;
 
-import net.example.firstmod.config.ProgressionSettings;
 import net.example.firstmod.network.ProgressionPayloads;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
@@ -35,7 +34,6 @@ public class MilestoneManager {
     }
 
     private static void checkAllPlayers(MinecraftServer server) {
-        if (!ProgressionSettings.isEnabled()) return;
         ProgressionStore store = ProgressionStore.getOrCreate(server);
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             double dist = Math.sqrt(player.getX() * player.getX() + player.getZ() * player.getZ());
@@ -45,7 +43,7 @@ public class MilestoneManager {
                 int threshold = milestone[0];
                 int reward = milestone[1];
                 if (dist >= threshold && data.distanceMilestones.add(threshold)) {
-                    data.addSp(reward);
+                    data.addPp(reward);
                     changed = true;
                     player.sendSystemMessage(Component.translatable(
                         "firstmod.milestone.reached", threshold, reward));
@@ -54,7 +52,7 @@ public class MilestoneManager {
             if (changed) {
                 store.save();
                 ProgressionPayloads.SyncPayload sync = new ProgressionPayloads.SyncPayload(
-                    data.statLevels, data.availableSp(), data.totalEarnedSp, data.spentSp);
+                    data.statLevels, data.availablePp(), data.totalEarnedPp, data.spentPp);
                 ServerPlayNetworking.send(player, sync);
             }
         }

@@ -23,7 +23,7 @@ public class ExampleModClient implements ClientModInitializer {
         );
 
         ClientPlayNetworking.registerGlobalReceiver(ProgressionPayloads.SyncPayload.TYPE, (payload, context) -> {
-            ClientCache.update(payload.statLevels(), payload.availableSp(), payload.totalEarned(), payload.spent());
+            ClientCache.update(payload.statLevels(), payload.availablePp(), payload.totalEarned(), payload.spent());
         });
     }
 }

@@ -13,10 +13,7 @@ public abstract class EnchantmentsMixin {
     @Inject(method = "getMaxLevel", at = @At("RETURN"), cancellable = true)
     private void onGetMaxLevel(CallbackInfoReturnable<Integer> cir) {
         int vanillaMax = cir.getReturnValue();
-        double distance = 5000;
-
-        int newMax = EnchantHelper.applyEnchantBonus(vanillaMax, distance);
-
+        int newMax = EnchantHelper.applyEnchantBonus(vanillaMax, 5000);
         if (newMax != vanillaMax) {
             cir.setReturnValue(newMax);
         }

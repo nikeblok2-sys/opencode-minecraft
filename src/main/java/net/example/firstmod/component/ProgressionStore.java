@@ -37,7 +37,13 @@ public class ProgressionStore {
             if (raw != null) {
                 dataMap.clear();
                 for (var entry : raw.entrySet()) {
-                    dataMap.put(UUID.fromString(entry.getKey()), entry.getValue());
+                    ProgressionData data = entry.getValue();
+                    if (data.statLevels.length != StatRegistry.count()) {
+                        int[] old = data.statLevels;
+                        data.statLevels = new int[StatRegistry.count()];
+                        System.arraycopy(old, 0, data.statLevels, 0, Math.min(old.length, StatRegistry.count()));
+                    }
+                    dataMap.put(UUID.fromString(entry.getKey()), data);
                 }
             }
         } catch (Exception e) {
@@ -73,11 +79,11 @@ public class ProgressionStore {
         private static MinecraftServer currentServer;
         private static ProgressionStore currentStore;
 
-        static ProgressionStore get(MinecraftServer server) {
+        static synchronized ProgressionStore get(MinecraftServer server) {
             return server == currentServer ? currentStore : null;
         }
 
-        static void set(MinecraftServer server, ProgressionStore store) {
+        static synchronized void set(MinecraftServer server, ProgressionStore store) {
             currentServer = server;
             currentStore = store;
         }

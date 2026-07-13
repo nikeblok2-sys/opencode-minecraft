@@ -25,6 +25,9 @@ public class ProgressionSettings {
     public static float bossHpMultiplier    = 1.0f;
     public static float bossDamageMultiplier = 1.0f;
 
+    public static double compoundBase = 5.0;
+    public static double compoundRate = 0.15;
+
     public static void applyPreset(int preset) {
         currentPreset = preset;
         switch (preset) {
@@ -43,6 +46,8 @@ public class ProgressionSettings {
                 mobGearChance             = 0.0f;
                 bossHpMultiplier          = 1.0f;
                 bossDamageMultiplier      = 1.0f;
+                compoundBase              = 5.0;
+                compoundRate              = 0.15;
             }
             case 1 -> {
                 dungeonScalableMultiplier = 1.2f;
@@ -59,6 +64,8 @@ public class ProgressionSettings {
                 mobGearChance             = 0.2f;
                 bossHpMultiplier          = 1.3f;
                 bossDamageMultiplier      = 1.3f;
+                compoundBase              = 4.0;
+                compoundRate              = 0.12;
             }
             case 2 -> {
                 dungeonScalableMultiplier = 1.5f;
@@ -75,6 +82,8 @@ public class ProgressionSettings {
                 mobGearChance             = 0.4f;
                 bossHpMultiplier          = 1.7f;
                 bossDamageMultiplier      = 1.7f;
+                compoundBase              = 5.0;
+                compoundRate              = 0.15;
             }
             case 3 -> {
                 dungeonScalableMultiplier = 2.0f;
@@ -91,6 +100,8 @@ public class ProgressionSettings {
                 mobGearChance             = 0.6f;
                 bossHpMultiplier          = 2.5f;
                 bossDamageMultiplier      = 2.5f;
+                compoundBase              = 6.0;
+                compoundRate              = 0.18;
             }
             case 4 -> {
             }

@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class BossRewards {
 
-    private static final Map<Class<?>, Integer> BOSS_SP = Map.of(
+    private static final Map<Class<?>, Integer> BOSS_PP = Map.of(
         EnderDragon.class, 100,
         WitherBoss.class, 60,
         ElderGuardian.class, 30
@@ -20,7 +20,7 @@ public class BossRewards {
     public static void onEntityDeath(LivingEntity entity, ServerPlayer killer) {
         if (entity == null || killer == null) return;
         Integer reward = null;
-        for (var entry : BOSS_SP.entrySet()) {
+        for (var entry : BOSS_PP.entrySet()) {
             if (entry.getKey().isInstance(entity)) {
                 reward = entry.getValue();
                 break;
@@ -32,7 +32,7 @@ public class BossRewards {
         String bossId = entity.getType().builtInRegistryHolder().key().identifier().toString();
         if (data.killedBosses.contains(bossId)) return;
         data.killedBosses.add(bossId);
-        data.addSp(reward);
+        data.addPp(reward);
         store.save();
         killer.sendSystemMessage(Component.translatable("firstmod.boss.reward", reward, bossId));
     }

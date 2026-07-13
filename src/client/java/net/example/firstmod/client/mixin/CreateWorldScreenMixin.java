@@ -17,8 +17,12 @@ public abstract class CreateWorldScreenMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void onInit(CreateWorldScreen outer, CallbackInfo ci) {
-        this.customizeTypeButton.active = true;
-        outer.getUiState().addListener(data -> this.customizeTypeButton.active = true);
+        if (this.customizeTypeButton != null) {
+            this.customizeTypeButton.active = true;
+            outer.getUiState().addListener(data -> {
+                if (this.customizeTypeButton != null) this.customizeTypeButton.active = true;
+            });
+        }
     }
 
     @Inject(method = "openPresetEditor", at = @At("HEAD"), cancellable = true)

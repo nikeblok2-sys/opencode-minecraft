@@ -3,6 +3,7 @@ package net.example.firstmod.mixin;
 import net.example.firstmod.component.ProgressionData;
 import net.example.firstmod.component.ProgressionStore;
 import net.example.firstmod.component.StatFormulas;
+import net.example.firstmod.component.StatRegistry;
 import net.example.firstmod.config.ProgressionSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -19,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Block.class)
 public class BlockExpMixin {
 
+    private static final int XP_BOOST_INDEX = StatRegistry.indexOf("xp_boost");
+
     @Inject(method = "popExperience", at = @At("TAIL"))
     private void onPopExperience(ServerLevel level, BlockPos pos, int amount, CallbackInfo ci) {
         if (!ProgressionSettings.isEnabled() || amount <= 0) return;
@@ -28,8 +31,8 @@ public class BlockExpMixin {
             if (server != null) {
                 ProgressionStore store = ProgressionStore.getOrCreate(server);
                 ProgressionData data = store.get(player.getUUID());
-                double wisMult = StatFormulas.getEffect(StatFormulas.WIS, data.statLevels[StatFormulas.WIS]);
-                int extra = (int) Math.round(amount * (wisMult - 1.0));
+                double xpBoost = StatFormulas.getEffect(XP_BOOST_INDEX, data.statLevels[XP_BOOST_INDEX]);
+                int extra = (int) Math.round(amount * xpBoost / 100.0);
                 if (extra > 0) {
                     ExperienceOrb.award(level, Vec3.atCenterOf(pos), extra);
                 }

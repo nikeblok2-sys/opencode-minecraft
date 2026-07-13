@@ -5,6 +5,7 @@ import net.example.firstmod.client.hud.HudComponent;
 import net.example.firstmod.client.state.ClientCache;
 import net.example.firstmod.client.theme.Colors;
 import net.example.firstmod.client.theme.StatTheme;
+import net.example.firstmod.component.StatRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -22,10 +23,11 @@ public class StatsHudComponent implements HudComponent {
         if (!HudConfig.showStats() || ClientCache.getStatLevels() == null) return 0;
         int[] levels = ClientCache.getStatLevels();
         int w = 0;
-        for (int i = 0; i < StatTheme.STATS.length; i++) {
-            w += font.width(StatTheme.STATS[i].icon() + levels[i]) + 6;
+        for (int i = 0; i < Math.min(6, StatRegistry.count()); i++) {
+            StatRegistry.StatDef def = StatRegistry.get(i);
+            w += font.width(def.icon() + levels[i]) + 6;
         }
-        if (StatTheme.STATS.length > 0) w -= 6;
+        if (StatRegistry.count() > 0) w -= 6;
         return w;
     }
 
@@ -41,9 +43,11 @@ public class StatsHudComponent implements HudComponent {
         if (levels == null) return;
 
         int sx = x;
-        for (int i = 0; i < StatTheme.STATS.length; i++) {
-            String s = StatTheme.STATS[i].icon() + levels[i];
-            int c = StatTheme.STATS[i].color() & 0xBBFFFFFF;
+        int max = Math.min(6, StatRegistry.count());
+        for (int i = 0; i < max; i++) {
+            StatRegistry.StatDef def = StatRegistry.get(i);
+            String s = def.icon() + levels[i];
+            int c = def.color() & 0xBBFFFFFF;
             g.text(font, s, sx, y, c);
             sx += font.width(s) + 6;
         }

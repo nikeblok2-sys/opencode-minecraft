@@ -8,9 +8,7 @@ import net.example.firstmod.profile.ProgressionProfileManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.storage.LevelData;
 
 import java.util.List;
 
@@ -45,25 +43,28 @@ public class DistanceHudComponent implements HudComponent {
         if (dist < 0) return;
 
         String distText = distanceText();
-        g.text(font, distText, x, y, Colors.TEXT_DIM);
-
         ProgressionProfile profile = ProgressionProfileManager.getProfile();
         List<Double> thresholds = profile.equipThresholds();
+        String next = (thresholds != null) ? nextThreshold(dist, thresholds) : null;
+
+        int distW = font.width(distText);
+        int nextW = (next != null) ? font.width(next) : 0;
+        int totalW = Math.max(distW, nextW);
+
+        g.text(font, distText, x, y, Colors.TEXT_DIM);
+        if (next != null) {
+            g.text(font, next, x + totalW - nextW, y, Colors.TEXT_DIM);
+        }
+
         if (thresholds == null || thresholds.isEmpty()) return;
 
         float progress = thresholdProgress(dist, thresholds);
         int barY = y + font.lineHeight + 2;
-        int barW = getWidth();
 
-        g.fill(x, barY, x + barW, barY + BAR_H, Colors.SHADOW);
-        int fillW = (int) (barW * Mth.clamp(progress, 0, 1));
+        g.fill(x, barY, x + totalW, barY + BAR_H, Colors.SHADOW);
+        int fillW = (int) (totalW * Mth.clamp(progress, 0, 1));
         if (fillW > 0) {
             g.fill(x, barY, x + fillW, barY + BAR_H, Colors.ACCENT_GOLD);
-        }
-
-        String next = nextThreshold(dist, thresholds);
-        if (next != null) {
-            g.text(font, next, x + barW - font.width(next), barY - font.lineHeight - 1, Colors.TEXT_DIM);
         }
     }
 
@@ -80,11 +81,8 @@ public class DistanceHudComponent implements HudComponent {
 
     private static int currentDistance(Minecraft mc) {
         if (mc.level == null || mc.player == null) return -1;
-        LevelData.RespawnData respawn = mc.level.getRespawnData();
-        BlockPos spawnPos = respawn != null ? respawn.pos() : null;
-        if (spawnPos == null) return -1;
-        double dx = mc.player.getX() - (spawnPos.getX() + 0.5);
-        double dz = mc.player.getZ() - (spawnPos.getZ() + 0.5);
+        double dx = mc.player.getX();
+        double dz = mc.player.getZ();
         return (int) Math.sqrt(dx * dx + dz * dz);
     }
 

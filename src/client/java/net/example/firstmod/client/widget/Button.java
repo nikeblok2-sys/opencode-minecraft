@@ -12,13 +12,21 @@ import net.minecraft.network.chat.Component;
 
 public class Button extends AbstractButton {
 
-    private final int accent;
-    private final Runnable action;
+    private int accent;
+    private Runnable action;
     private final Transition hoverT = new Transition(0);
 
     public Button(int x, int y, int w, String text, int accent, Runnable action) {
         super(x, y, w, 20, Component.literal(text));
         this.accent = accent;
+        this.action = action;
+    }
+
+    public void setColor(int accent) {
+        this.accent = accent;
+    }
+
+    public void setAction(Runnable action) {
         this.action = action;
     }
 

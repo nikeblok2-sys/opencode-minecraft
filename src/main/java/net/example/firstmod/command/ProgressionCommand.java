@@ -8,6 +8,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.example.firstmod.component.ProgressionData;
 import net.example.firstmod.component.ProgressionStore;
 import net.example.firstmod.component.StatFormulas;
+import net.example.firstmod.component.StatRegistry;
 import net.example.firstmod.config.ProgressionConfig;
 import net.example.firstmod.config.ProgressionSettings;
 import net.example.firstmod.network.ProgressionPayloads;
@@ -42,6 +43,8 @@ public class ProgressionCommand {
         SETTINGS.put("enchantBonusLevels", new SettingDef("firstmod.setting.enchantBonusLevels.label", "firstmod.setting.enchantBonusLevels.desc"));
         SETTINGS.put("bossHpMultiplier", new SettingDef("firstmod.setting.bossHpMultiplier.label", "firstmod.setting.bossHpMultiplier.desc"));
         SETTINGS.put("bossDamageMultiplier", new SettingDef("firstmod.setting.bossDamageMultiplier.label", "firstmod.setting.bossDamageMultiplier.desc"));
+        SETTINGS.put("compoundBase", new SettingDef("firstmod.setting.compoundBase.label", "firstmod.setting.compoundBase.desc"));
+        SETTINGS.put("compoundRate", new SettingDef("firstmod.setting.compoundRate.label", "firstmod.setting.compoundRate.desc"));
     }
 
     private static final SuggestionProvider<CommandSourceStack> SETTING_SUGGESTIONS =
@@ -55,13 +58,13 @@ public class ProgressionCommand {
             Commands.literal("progression")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 
-                .then(Commands.literal("addsp")
+                .then(Commands.literal("addpp")
                     .then(Commands.argument("targets", EntityArgument.players())
                         .then(Commands.argument("amount", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0))
-                            .executes(ctx -> executeAddSp(ctx)))))
+                            .executes(ctx -> executeAddPp(ctx)))))
 
-                .then(Commands.literal("getsp")
-                    .executes(ctx -> executeGetSp(ctx)))
+                .then(Commands.literal("getpp")
+                    .executes(ctx -> executeGetPp(ctx)))
 
                 .then(Commands.literal("shop")
                     .executes(ctx -> {
@@ -94,21 +97,21 @@ public class ProgressionCommand {
         );
     }
 
-    private static int executeAddSp(CommandContext<CommandSourceStack> ctx) {
+    private static int executeAddPp(CommandContext<CommandSourceStack> ctx) {
         try {
             var players = EntityArgument.getPlayers(ctx, "targets");
             int amount = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "amount");
             for (ServerPlayer p : players) {
                 ProgressionStore store = ProgressionStore.getOrCreate(p.level().getServer());
                 ProgressionData data = store.get(p.getUUID());
-                data.addSp(amount);
+                data.addPp(amount);
                 store.save();
                 ServerPlayNetworking.send(p, new ProgressionPayloads.SyncPayload(
-                    data.statLevels, data.availableSp(), data.totalEarnedSp, data.spentSp));
+                    data.statLevels, data.availablePp(), data.totalEarnedPp, data.spentPp));
                 p.sendSystemMessage(Component.translatable("firstmod.shop.sold", amount));
             }
             ctx.getSource().sendSuccess(() ->
-                Component.literal("Added " + amount + " SP to " + players.size() + " player(s)"), true);
+                Component.literal("Added " + amount + " PP to " + players.size() + " player(s)"), true);
             return 1;
         } catch (Exception e) {
             ctx.getSource().sendFailure(Component.literal("Error: " + e.getMessage()));
@@ -116,23 +119,30 @@ public class ProgressionCommand {
         }
     }
 
-    private static int executeGetSp(CommandContext<CommandSourceStack> ctx) {
+    private static int executeGetPp(CommandContext<CommandSourceStack> ctx) {
         var src = ctx.getSource();
         if (src.getEntity() instanceof ServerPlayer player) {
             ProgressionStore store = ProgressionStore.getOrCreate(player.level().getServer());
             ProgressionData data = store.get(player.getUUID());
-            int sp = data.availableSp();
-            int total = data.totalEarnedSp;
+            int pp = data.availablePp();
+            int total = data.totalEarnedPp;
             var sb = new StringBuilder();
             sb.append("§6=== Progression Stats ===§r\n");
-            sb.append("§7Available SP: §f").append(sp).append("§r\n");
+            sb.append("§7Available PP: §f").append(pp).append("§r\n");
             sb.append("§7Total earned: §f").append(total).append("§r\n");
-            sb.append("§7Spent: §f").append(data.spentSp).append("§r\n");
-            for (int i = 0; i < StatFormulas.STAT_COUNT; i++) {
-                String label = Component.translatable(StatFormulas.STAT_LABEL_KEYS[i]).getString();
+            sb.append("§7Spent: §f").append(data.spentPp).append("§r\n");
+            for (int i = 0; i < StatRegistry.count(); i++) {
+                String label = Component.translatable(StatRegistry.get(i).labelKey()).getString();
                 double effect = StatFormulas.getEffect(i, data.statLevels[i]);
+                StatRegistry.StatDef def = StatRegistry.get(i);
+                String val;
+                if (def.isPercent()) {
+                    val = String.format("%.1f", effect) + "%";
+                } else {
+                    val = String.format("%.1f", effect);
+                }
                 sb.append("§7").append(label).append(": §fLv.").append(data.statLevels[i])
-                    .append(" (").append(String.format("%.0f", (effect - 1.0) * 100)).append("%)§r\n");
+                    .append(" (+").append(val).append(")§r\n");
             }
             ctx.getSource().sendSuccess(() -> Component.literal(sb.toString()), false);
             return 1;
@@ -178,7 +188,9 @@ public class ProgressionCommand {
             .append(statusBool("overlimitEnchants", ProgressionSettings.overlimitEnchants))
             .append(statusLine("enchantBonusLevels", ProgressionSettings.enchantBonusLevels))
             .append(statusLine("bossHpMultiplier", ProgressionSettings.bossHpMultiplier))
-            .append(statusLine("bossDamageMultiplier", ProgressionSettings.bossDamageMultiplier));
+            .append(statusLine("bossDamageMultiplier", ProgressionSettings.bossDamageMultiplier))
+            .append(statusLine("compoundBase", (float)ProgressionSettings.compoundBase))
+            .append(statusLine("compoundRate", (float)ProgressionSettings.compoundRate));
         ctx.getSource().sendSuccess(() -> result, false);
         return 1;
     }
@@ -257,12 +269,6 @@ public class ProgressionCommand {
         return Component.literal("§7").append(label).append(Component.literal(": §f" + String.format("%.2f", val) + "§r\n"));
     }
 
-    private static MutableComponent statusLine(String key, int val) {
-        SettingDef def = SETTINGS.get(key);
-        MutableComponent label = def != null ? Component.translatable(def.labelKey) : Component.literal(key);
-        return Component.literal("§7").append(label).append(Component.literal(": §f" + val + "§r\n"));
-    }
-
     private static MutableComponent statusBool(String key, boolean val) {
         SettingDef def = SETTINGS.get(key);
         MutableComponent label = def != null ? Component.translatable(def.labelKey) : Component.literal(key);
@@ -286,6 +292,8 @@ public class ProgressionCommand {
             case "enchantBonusLevels" -> ProgressionSettings.enchantBonusLevels;
             case "bossHpMultiplier" -> ProgressionSettings.bossHpMultiplier;
             case "bossDamageMultiplier" -> ProgressionSettings.bossDamageMultiplier;
+            case "compoundBase" -> (float)ProgressionSettings.compoundBase;
+            case "compoundRate" -> (float)ProgressionSettings.compoundRate;
             default -> 0;
         };
     }
@@ -304,6 +312,8 @@ public class ProgressionCommand {
             case "enchantBonusLevels" -> ProgressionSettings.enchantBonusLevels = Math.round(value);
             case "bossHpMultiplier" -> ProgressionSettings.bossHpMultiplier = value;
             case "bossDamageMultiplier" -> ProgressionSettings.bossDamageMultiplier = value;
+            case "compoundBase" -> ProgressionSettings.compoundBase = value;
+            case "compoundRate" -> ProgressionSettings.compoundRate = value;
         }
     }
 }

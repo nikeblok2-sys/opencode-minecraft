@@ -63,7 +63,9 @@ public abstract class BaseScreen extends Screen {
         renderCloseButton(g, mx, my);
         RenderHelper.divider(g, windowX + windowWidth / 2, windowY + LayoutHelper.TITLE_H, windowWidth / 2 - 10);
 
-        super.extractRenderState(g, mx, my, delta);
+        if (slideProgress >= 1f) {
+            super.extractRenderState(g, mx, my, delta);
+        }
     }
 
     protected void renderTitle(GuiGraphicsExtractor g) {
@@ -139,6 +141,7 @@ public abstract class BaseScreen extends Screen {
     }
 
     private void startDrag(int mx, int my) {
+        if (slideProgress < 1f) return;
         if (my < windowY || my >= windowY + LayoutHelper.TITLE_H) return;
         if (mx < windowX || mx >= windowX + windowWidth) return;
         if (closeButtonHit(mx, my)) return;

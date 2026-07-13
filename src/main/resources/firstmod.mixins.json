@@ -10,7 +10,8 @@
 		"MobMixin",
 		"LivingEntityMixin",
 		"VillagerMixin",
-		"BlockExpMixin"
+		"BlockExpMixin",
+		"FishingHookMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
